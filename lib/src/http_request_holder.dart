@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -6,16 +8,12 @@ typedef JSONMapParser<T> = T Function(Map<String, dynamic>);
 
 typedef JSONListParser<T> = T Function(List<dynamic>);
 
-// ignore: constant_identifier_names
 enum JSONParserType { LIST, MAP }
 
-// ignore: constant_identifier_names
 enum HTTPRequestProtocol { HTTP, HTTPS }
 
-// ignore: constant_identifier_names
 enum HTTPRequestMethod { GET, POST, PUT, PATCH, DELETE }
 
-// ignore: constant_identifier_names
 enum _HTTPRequestResponseType {
   REAL_HTTP_REQUEST_RESPONSE,
   DUMMY_HTTP_REQUEST_RESPONSE,
