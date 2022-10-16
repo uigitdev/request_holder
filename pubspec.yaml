@@ -1,0 +1,17 @@
+name: uigitdev_request_holder
+description: A ready-made structure that holds HTTP requests.
+version: 1.0.0
+homepage: https://github.com/uigitdev/request_holder
+
+environment:
+  sdk: '>=2.18.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
