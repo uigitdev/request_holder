@@ -1,7 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 import 'dart:convert';
-import 'dart:io';
+import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
 
 typedef JSONMapParser<T> = T Function(Map<String, dynamic>);
@@ -68,13 +68,13 @@ abstract class HTTPRequestHolder<T> {
           settings.dummyResponse!.isDummyResponse) {
         return await _dummyResponseProcessing();
       } else {
-        final clientRequest = await _requestByMethod(method, _createUri());
-        _setClientRequestSettings(clientRequest);
-        _setHeaders(clientRequest);
-        _setRequestBody(clientRequest);
-
-        final HttpClientRequest request = await clientRequest.flush();
-        return await _responseProcessing(await request.close());
+        final response = await _requestByMethod(
+          method: method,
+          uri: _createUri(),
+          headers: _createStringHeaders(),
+          body: jsonEncode(requestBody),
+        );
+        return await _responseProcessing(response);
       }
     } else {
       if (settings.isDebugPrint) {
@@ -114,20 +114,14 @@ abstract class HTTPRequestHolder<T> {
     }
   }
 
-  Future<T?> _responseProcessing(HttpClientResponse response) async {
+  Future<T?> _responseProcessing(http.Response response) async {
     if (response.statusCode >= 200 && response.statusCode < 300) {
-      final content = StringBuffer();
-
-      await for (var data in response.transform(utf8.decoder)) {
-        content.write(data);
-      }
-
       if (settings.isDebugPrint) {
         debugPrint(
-            '✅ ${_HTTPRequestResponseType.REAL_HTTP_REQUEST_RESPONSE.name}($T):\n$content');
+            '✅ ${_HTTPRequestResponseType.REAL_HTTP_REQUEST_RESPONSE.name}($T):\n${response.body}');
       }
 
-      final json = await jsonDecode(content.toString());
+      final json = await jsonDecode(response.body);
       return _responseParser(json);
     }
     return null;
@@ -142,20 +136,15 @@ abstract class HTTPRequestHolder<T> {
     }
   }
 
-  void _setClientRequestSettings(HttpClientRequest clientRequest) {
-    clientRequest.headers.contentType = ContentType.json;
-  }
+  Map<String, String> _createStringHeaders() {
+    final stringHeaders = <String, String>{};
+    stringHeaders['Content-Type'] = 'application/json';
 
-  void _setRequestBody(HttpClientRequest clientRequest) {
-    final requestBodyString = jsonEncode(requestBody);
-    clientRequest.headers.contentLength = requestBodyString.length;
-    clientRequest.write(requestBodyString);
-  }
-
-  void _setHeaders(HttpClientRequest clientRequest) {
     headers.forEach((key, value) {
-      clientRequest.headers.set(key, value);
+      stringHeaders[key] = value;
     });
+
+    return stringHeaders;
   }
 
   Uri _createUri() {
@@ -167,19 +156,22 @@ abstract class HTTPRequestHolder<T> {
     );
   }
 
-  Future<HttpClientRequest> _requestByMethod(
-      HTTPRequestMethod method, Uri uri) async {
+  Future<http.Response> _requestByMethod(
+      {required HTTPRequestMethod method,
+      required Uri uri,
+      required Map<String, String> headers,
+      required String body}) async {
     switch (method) {
       case HTTPRequestMethod.GET:
-        return await HttpClient().getUrl(uri);
+        return await http.get(uri, headers: headers);
       case HTTPRequestMethod.POST:
-        return await HttpClient().postUrl(uri);
+        return await http.post(uri, headers: headers, body: body);
       case HTTPRequestMethod.PUT:
-        return await HttpClient().putUrl(uri);
+        return await http.put(uri, headers: headers, body: body);
       case HTTPRequestMethod.PATCH:
-        return await HttpClient().patchUrl(uri);
+        return await http.patch(uri, headers: headers, body: body);
       case HTTPRequestMethod.DELETE:
-        return await HttpClient().deleteUrl(uri);
+        return await http.delete(uri, headers: headers, body: body);
     }
   }
 }
