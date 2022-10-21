@@ -45,8 +45,11 @@ abstract class HTTPRequestHolder<T> {
   /// Add [requestBody].
   Map<String, dynamic> get requestBody => {};
 
-  /// You can turn of [debugPrint] and test the responses with dummy data if you know the JSON structure.
+  /// You can turn of [debugPrint].
   HTTPRequestHolderSettings get settings => HTTPRequestHolderSettings();
+
+  ///Test the responses with dummy data if you know the JSON structure.
+  HTTPRequestHolderDummyResponse? dummyResponse;
 
   /// Select [parserType]. [LIST] or [MAP]
   JSONParserType get parserType;
@@ -64,8 +67,7 @@ abstract class HTTPRequestHolder<T> {
   /// The console indicates the logs.
   Future<T?> send() async {
     if (_isParserExists()) {
-      if (settings.dummyResponse != null &&
-          settings.dummyResponse!.isDummyResponse) {
+      if (dummyResponse != null && dummyResponse!.isDummyResponse) {
         return await _dummyResponseProcessing();
       } else {
         final response = await _requestByMethod(
@@ -96,21 +98,21 @@ abstract class HTTPRequestHolder<T> {
   }
 
   Future<T?> _dummyResponseProcessing() async {
-    await Future.delayed(settings.dummyResponse!.duration);
+    await Future.delayed(dummyResponse!.duration);
 
-    if (settings.dummyResponse!.dummyErrorResponse != null &&
-        settings.dummyResponse!.dummyErrorResponse!.isDummyErrorResponse) {
+    if (dummyResponse!.dummyErrorResponse != null &&
+        dummyResponse!.dummyErrorResponse!.isDummyErrorResponse) {
       if (settings.isDebugPrint) {
         debugPrint(
-            '⛔ ${_HTTPRequestResponseType.DUMMY_HTTP_REQUEST_ERROR_RESPONSE.name}($T):\n${settings.dummyResponse!.dummyErrorResponse!.error}');
+            '⛔ ${_HTTPRequestResponseType.DUMMY_HTTP_REQUEST_ERROR_RESPONSE.name}($T):\n${dummyResponse!.dummyErrorResponse!.error}');
       }
-      return Future.error(settings.dummyResponse!.dummyErrorResponse!.error);
+      return Future.error(dummyResponse!.dummyErrorResponse!.error);
     } else {
       if (settings.isDebugPrint) {
         debugPrint(
-            '⚠️ ${_HTTPRequestResponseType.DUMMY_HTTP_REQUEST_RESPONSE.name}($T):\n${settings.dummyResponse!.json}');
+            '⚠️ ${_HTTPRequestResponseType.DUMMY_HTTP_REQUEST_RESPONSE.name}($T):\n${dummyResponse!.json}');
       }
-      return _responseParser(settings.dummyResponse!.json);
+      return _responseParser(dummyResponse!.json);
     }
   }
 
@@ -178,12 +180,8 @@ abstract class HTTPRequestHolder<T> {
 
 class HTTPRequestHolderSettings {
   final bool isDebugPrint;
-  final HTTPRequestHolderDummyResponse? dummyResponse;
 
-  HTTPRequestHolderSettings({
-    this.isDebugPrint = true,
-    this.dummyResponse,
-  });
+  HTTPRequestHolderSettings({this.isDebugPrint = true});
 }
 
 class HTTPRequestHolderDummyResponse {
