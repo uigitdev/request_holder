@@ -1,6 +1,6 @@
 name: uigitdev_request_holder
 description: A ready-made structure that holds HTTP requests and helps to ensure reusability and reduce the number of lines of code.
-version: 1.1.0
+version: 1.1.1
 homepage: https://github.com/uigitdev/request_holder
 
 environment:

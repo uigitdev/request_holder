@@ -84,4 +84,29 @@ class PostRequest extends HTTPRequestHolder<PostModel> {
 
   @override
   JSONMapParser<PostModel>? get mapParser => PostModel.fromJson;
+
+  @override
+  HTTPRequestHolderSettings get settings {
+    return HTTPRequestHolderSettings(
+      isDebugPrint: true,
+    );
+  }
+
+  @override
+  HTTPRequestHolderDummyResponse? get dummyResponse {
+    return HTTPRequestHolderDummyResponse(
+      isDummyResponse: false,
+      duration: const Duration(seconds: 2),
+      json: {
+        "userId": 1,
+        "id": 1,
+        "title": "Dummy title response",
+        "body": "Use this function if you want to see dummy data.",
+      },
+      dummyErrorResponse: HTTPRequestHolderDummyErrorResponse(
+        isDummyErrorResponse: false,
+        error: ErrorHint('Dummy error response'),
+      ),
+    );
+  }
 }
