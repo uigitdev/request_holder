@@ -1,3 +1,7 @@
+## 1.2.0
+
+- Created [JSONRequestHolder] abstract class.
+
 ## 1.1.1
 
 - Changed [settings] method structure.
