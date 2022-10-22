@@ -81,7 +81,7 @@ abstract class HTTPRequestHolder<T> {
     } else {
       if (settings.isDebugPrint) {
         debugPrint(
-            '⚠️ ${_HTTPRequestResponseType.NO_HTTP_RESPONSE_PARSER.name}($T): Missing "${parserType.name.toLowerCase()}Parser" method in "$T" class.');
+            '⚠️ ${_HTTPRequestResponseType.NO_HTTP_RESPONSE_PARSER.name}($T): Missing "${parserType.name.toLowerCase()}Parser" method.');
       }
       return Future.error(
           ErrorHint(_HTTPRequestResponseType.NO_HTTP_RESPONSE_PARSER.name));
