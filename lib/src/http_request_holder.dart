@@ -14,12 +14,7 @@ enum HTTPRequestProtocol { HTTP, HTTPS }
 
 enum HTTPRequestMethod { GET, POST, PUT, PATCH, DELETE }
 
-enum _HTTPRequestResponseType {
-  REAL_HTTP_REQUEST_RESPONSE,
-  DUMMY_HTTP_REQUEST_RESPONSE,
-  DUMMY_HTTP_REQUEST_ERROR_RESPONSE,
-  NO_HTTP_RESPONSE_PARSER
-}
+enum _HTTPRequestResponseType { REAL_HTTP_REQUEST_RESPONSE, DUMMY_HTTP_REQUEST_RESPONSE, DUMMY_HTTP_REQUEST_ERROR_RESPONSE, NO_HTTP_RESPONSE_PARSER }
 
 abstract class HTTPRequestHolder<T> {
   /// Add request [host], do not include www and http or https.
@@ -80,11 +75,9 @@ abstract class HTTPRequestHolder<T> {
       }
     } else {
       if (settings.isDebugPrint) {
-        debugPrint(
-            '⚠️ ${_HTTPRequestResponseType.NO_HTTP_RESPONSE_PARSER.name}($T): Missing "${parserType.name.toLowerCase()}Parser" method.');
+        debugPrint('⚠️ ${_HTTPRequestResponseType.NO_HTTP_RESPONSE_PARSER.name}($T): Missing "${parserType.name.toLowerCase()}Parser" method.');
       }
-      return Future.error(
-          ErrorHint(_HTTPRequestResponseType.NO_HTTP_RESPONSE_PARSER.name));
+      return Future.error(ErrorHint(_HTTPRequestResponseType.NO_HTTP_RESPONSE_PARSER.name));
     }
   }
 
@@ -100,17 +93,14 @@ abstract class HTTPRequestHolder<T> {
   Future<T?> _dummyResponseProcessing() async {
     await Future.delayed(dummyResponse!.duration);
 
-    if (dummyResponse!.dummyErrorResponse != null &&
-        dummyResponse!.dummyErrorResponse!.isDummyErrorResponse) {
+    if (dummyResponse!.dummyErrorResponse != null && dummyResponse!.dummyErrorResponse!.isDummyErrorResponse) {
       if (settings.isDebugPrint) {
-        debugPrint(
-            '⛔ ${_HTTPRequestResponseType.DUMMY_HTTP_REQUEST_ERROR_RESPONSE.name}($T):\n${dummyResponse!.dummyErrorResponse!.error}');
+        debugPrint('⛔ ${_HTTPRequestResponseType.DUMMY_HTTP_REQUEST_ERROR_RESPONSE.name}($T):\n${dummyResponse!.dummyErrorResponse!.error}');
       }
       return Future.error(dummyResponse!.dummyErrorResponse!.error);
     } else {
       if (settings.isDebugPrint) {
-        debugPrint(
-            '⚠️ ${_HTTPRequestResponseType.DUMMY_HTTP_REQUEST_RESPONSE.name}($T):\n${dummyResponse!.json}');
+        debugPrint('⚠️ ${_HTTPRequestResponseType.DUMMY_HTTP_REQUEST_RESPONSE.name}($T):\n${dummyResponse!.json}');
       }
       return _responseParser(dummyResponse!.json);
     }
@@ -119,14 +109,17 @@ abstract class HTTPRequestHolder<T> {
   Future<T?> _responseProcessing(http.Response response) async {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       if (settings.isDebugPrint) {
-        debugPrint(
-            '✅ ${_HTTPRequestResponseType.REAL_HTTP_REQUEST_RESPONSE.name}($T):\n${response.body}');
+        debugPrint('✅ ${_HTTPRequestResponseType.REAL_HTTP_REQUEST_RESPONSE.name}($T):\n${response.body}');
       }
 
       final json = await jsonDecode(response.body);
       return _responseParser(json);
+    } else {
+      return Future.error(HTTPRequestHolderErrorResponse(
+        statusCode: response.statusCode,
+        body: response.body,
+      ));
     }
-    return null;
   }
 
   T? _responseParser(dynamic json) {
@@ -158,11 +151,7 @@ abstract class HTTPRequestHolder<T> {
     );
   }
 
-  Future<http.Response> _requestByMethod(
-      {required HTTPRequestMethod method,
-      required Uri uri,
-      required Map<String, String> headers,
-      required String body}) async {
+  Future<http.Response> _requestByMethod({required HTTPRequestMethod method, required Uri uri, required Map<String, String> headers, required String body}) async {
     switch (method) {
       case HTTPRequestMethod.GET:
         return await http.get(uri, headers: headers);
@@ -205,5 +194,15 @@ class HTTPRequestHolderDummyErrorResponse {
   HTTPRequestHolderDummyErrorResponse({
     required this.isDummyErrorResponse,
     required this.error,
+  });
+}
+
+class HTTPRequestHolderErrorResponse{
+  final int statusCode;
+  final String body;
+
+  HTTPRequestHolderErrorResponse({
+    required this.statusCode,
+    required this.body,
   });
 }
