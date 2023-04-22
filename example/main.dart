@@ -35,9 +35,9 @@ class MyApp extends StatelessWidget {
             return Text(snapshot.data!.title.toString());
           } else {
             if (snapshot.hasError) {
-              if(snapshot.error is HTTPRequestHolderErrorResponse){
+              if (snapshot.error is HTTPRequestHolderErrorResponse) {
                 final error = snapshot.error as HTTPRequestHolderErrorResponse;
-               return Text('statusCode: ${error.statusCode}\nbody: ${error.body}');
+                return Text('statusCode: ${error.statusCode}\nbody: ${error.body}');
               }
               return Text('Error: ${snapshot.error}');
             } else {
@@ -109,7 +109,12 @@ class PostRequest extends HTTPRequestHolder<PostModel> {
       },
       dummyErrorResponse: HTTPRequestHolderDummyErrorResponse(
         isDummyErrorResponse: false,
-        error: ErrorHint('Dummy error response'),
+        error: HTTPRequestHolderErrorResponse(
+          statusCode: 404,
+          body: {
+            'error': 'Dummy error response',
+          },
+        ),
       ),
     );
   }

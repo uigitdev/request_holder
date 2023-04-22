@@ -199,7 +199,7 @@ class HTTPRequestHolderDummyErrorResponse {
 
 class HTTPRequestHolderErrorResponse{
   final int statusCode;
-  final String body;
+  final Object body;
 
   HTTPRequestHolderErrorResponse({
     required this.statusCode,
