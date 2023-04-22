@@ -1,3 +1,7 @@
+## 1.3.1
+
+- Dart Format
+
 ## 1.3.0
 
 - Created [HTTPRequestHolderErrorResponse] class to identify statusCode and body.
