@@ -40,6 +40,10 @@ class MyApp extends StatelessWidget {
             return Text(snapshot.data!.title.toString());
           } else {
             if (snapshot.hasError) {
+              if (snapshot.error is HTTPRequestHolderErrorResponse) {
+                final error = snapshot.error as HTTPRequestHolderErrorResponse;
+                return Text('statusCode: ${error.statusCode}\nbody: ${error.body}');
+              }
               return Text('Error: ${snapshot.error}');
             } else {
               return const Text('No data');
@@ -89,5 +93,35 @@ class PostRequest extends HTTPRequestHolder<PostModel> {
 
   @override
   JSONMapParser<PostModel>? get mapParser => PostModel.fromJson;
+
+  @override
+  HTTPRequestHolderSettings get settings {
+    return HTTPRequestHolderSettings(
+      isDebugPrint: true,
+    );
+  }
+
+  @override
+  HTTPRequestHolderDummyResponse? get dummyResponse {
+    return HTTPRequestHolderDummyResponse(
+      isDummyResponse: false,
+      duration: const Duration(seconds: 2),
+      json: {
+        "userId": 1,
+        "id": 1,
+        "title": "Dummy title response",
+        "body": "Use this function if you want to see dummy data.",
+      },
+      dummyErrorResponse: HTTPRequestHolderDummyErrorResponse(
+        isDummyErrorResponse: false,
+        error: HTTPRequestHolderErrorResponse(
+          statusCode: 404,
+          body: {
+            'error': 'Dummy error response',
+          },
+        ),
+      ),
+    );
+  }
 }
 ```
