@@ -37,7 +37,8 @@ class MyApp extends StatelessWidget {
             if (snapshot.hasError) {
               if (snapshot.error is HTTPRequestHolderErrorResponse) {
                 final error = snapshot.error as HTTPRequestHolderErrorResponse;
-                return Text('statusCode: ${error.statusCode}\nbody: ${error.body}');
+                return Text(
+                    'statusCode: ${error.statusCode}\nbody: ${error.body}');
               }
               return Text('Error: ${snapshot.error}');
             } else {
