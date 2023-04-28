@@ -1,3 +1,7 @@
+## 1.3.2
+
+- Changed the type of requestBody Map<String, dynamic> to dynamic. Previous versions are compatible. No need to change.
+
 ## 1.3.1
 
 - Dart Format

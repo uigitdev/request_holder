@@ -43,7 +43,7 @@ abstract class HTTPRequestHolder<T> {
   Map<String, dynamic> get headers => {};
 
   /// Add [requestBody].
-  Map<String, dynamic> get requestBody => {};
+  dynamic get requestBody => {};
 
   /// You can turn of [debugPrint].
   HTTPRequestHolderSettings get settings => HTTPRequestHolderSettings();
