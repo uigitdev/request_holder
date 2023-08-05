@@ -1,3 +1,7 @@
+## 1.3.3
+
+- Removed [foundation] usage. In order to use it in dart_frog.
+
 ## 1.3.2
 
 - Changed the type of requestBody Map<String, dynamic> to dynamic. Previous versions are compatible. No need to change.
