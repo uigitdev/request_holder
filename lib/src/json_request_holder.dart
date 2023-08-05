@@ -32,18 +32,16 @@ abstract class JSONRequestHolder<T> {
       final json = await jsonDecode(body);
 
       if (settings.isDebugPrint) {
-        log(
-            '✅ ${_JSONRequestResponseType.JSON_REQUEST_RESPONSE.name}($T):\n$json');
+        log('✅ ${_JSONRequestResponseType.JSON_REQUEST_RESPONSE.name}($T):\n$json');
       }
 
       return _responseParser(json);
     } else {
       if (settings.isDebugPrint) {
-        log(
-            '⚠️ ${_JSONRequestResponseType.NO_JSON_RESPONSE_PARSER.name}($T): Missing "${parserType.name.toLowerCase()}Parser" method.');
+        log('⚠️ ${_JSONRequestResponseType.NO_JSON_RESPONSE_PARSER.name}($T): Missing "${parserType.name.toLowerCase()}Parser" method.');
       }
-      return Future.error(
-          Error.safeToString(_JSONRequestResponseType.NO_JSON_RESPONSE_PARSER.name));
+      return Future.error(Error.safeToString(
+          _JSONRequestResponseType.NO_JSON_RESPONSE_PARSER.name));
     }
   }
 

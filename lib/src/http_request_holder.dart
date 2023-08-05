@@ -80,11 +80,10 @@ abstract class HTTPRequestHolder<T> {
       }
     } else {
       if (settings.isDebugPrint) {
-        log(
-            '⚠️ ${_HTTPRequestResponseType.NO_HTTP_RESPONSE_PARSER.name}($T): Missing "${parserType.name.toLowerCase()}Parser" method.');
+        log('⚠️ ${_HTTPRequestResponseType.NO_HTTP_RESPONSE_PARSER.name}($T): Missing "${parserType.name.toLowerCase()}Parser" method.');
       }
-      return Future.error(
-          Error.safeToString(_HTTPRequestResponseType.NO_HTTP_RESPONSE_PARSER.name));
+      return Future.error(Error.safeToString(
+          _HTTPRequestResponseType.NO_HTTP_RESPONSE_PARSER.name));
     }
   }
 
@@ -103,14 +102,12 @@ abstract class HTTPRequestHolder<T> {
     if (dummyResponse!.dummyErrorResponse != null &&
         dummyResponse!.dummyErrorResponse!.isDummyErrorResponse) {
       if (settings.isDebugPrint) {
-        log(
-            '⛔ ${_HTTPRequestResponseType.DUMMY_HTTP_REQUEST_ERROR_RESPONSE.name}($T):\n${dummyResponse!.dummyErrorResponse!.error}');
+        log('⛔ ${_HTTPRequestResponseType.DUMMY_HTTP_REQUEST_ERROR_RESPONSE.name}($T):\n${dummyResponse!.dummyErrorResponse!.error}');
       }
       return Future.error(dummyResponse!.dummyErrorResponse!.error);
     } else {
       if (settings.isDebugPrint) {
-        log(
-            '⚠️ ${_HTTPRequestResponseType.DUMMY_HTTP_REQUEST_RESPONSE.name}($T):\n${dummyResponse!.json}');
+        log('⚠️ ${_HTTPRequestResponseType.DUMMY_HTTP_REQUEST_RESPONSE.name}($T):\n${dummyResponse!.json}');
       }
       return _responseParser(dummyResponse!.json);
     }
@@ -119,8 +116,7 @@ abstract class HTTPRequestHolder<T> {
   Future<T?> _responseProcessing(http.Response response) async {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       if (settings.isDebugPrint) {
-        log(
-            '✅ ${_HTTPRequestResponseType.REAL_HTTP_REQUEST_RESPONSE.name}($T):\n${response.body}');
+        log('✅ ${_HTTPRequestResponseType.REAL_HTTP_REQUEST_RESPONSE.name}($T):\n${response.body}');
       }
 
       final json = await jsonDecode(response.body);
