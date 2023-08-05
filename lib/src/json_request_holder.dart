@@ -1,7 +1,7 @@
 // ignore_for_file: constant_identifier_names
 
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
+import 'dart:developer';
 import 'package:uigitdev_request_holder/src/http_request_holder.dart';
 
 enum _JSONRequestResponseType { JSON_REQUEST_RESPONSE, NO_JSON_RESPONSE_PARSER }
@@ -32,18 +32,18 @@ abstract class JSONRequestHolder<T> {
       final json = await jsonDecode(body);
 
       if (settings.isDebugPrint) {
-        debugPrint(
+        log(
             '✅ ${_JSONRequestResponseType.JSON_REQUEST_RESPONSE.name}($T):\n$json');
       }
 
       return _responseParser(json);
     } else {
       if (settings.isDebugPrint) {
-        debugPrint(
+        log(
             '⚠️ ${_JSONRequestResponseType.NO_JSON_RESPONSE_PARSER.name}($T): Missing "${parserType.name.toLowerCase()}Parser" method.');
       }
       return Future.error(
-          ErrorHint(_JSONRequestResponseType.NO_JSON_RESPONSE_PARSER.name));
+          Error.safeToString(_JSONRequestResponseType.NO_JSON_RESPONSE_PARSER.name));
     }
   }
 
