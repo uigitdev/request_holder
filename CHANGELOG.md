@@ -1,3 +1,7 @@
+## 1.3.4
+
+- Updated http package to 1.1.0
+
 ## 1.3.3
 
 - Removed [foundation] usage. In order to use it in dart_frog.
