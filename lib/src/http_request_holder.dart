@@ -30,6 +30,9 @@ abstract class HTTPRequestHolder<T> {
   /// Correct: /posts
   String get path;
 
+  /// Add request [port].
+  int? get port => null;
+
   /// Select [protocol]. [HTTP] or [HTTPS]
   HTTPRequestProtocol get protocol;
 
@@ -154,6 +157,7 @@ abstract class HTTPRequestHolder<T> {
       scheme: protocol.name.toLowerCase(),
       host: host,
       path: path,
+      port: port,
       queryParameters: queryParams,
     );
   }
