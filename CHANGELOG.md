@@ -1,3 +1,10 @@
+## 1.4.0
+
+- All successful HTTP responses are now returned through the HTTPRequestHolderSuccessResponse class.
+- Added a new statusCode property, ensuring the HTTP status code is always available for successful responses. 
+- The payload property now contains the previously parsed <T> model.
+- payload is now nullable to support successful backend responses that only return an HTTP status code with no response body.
+
 ## 1.3.5
 
 - Add [port] param.

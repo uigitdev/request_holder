@@ -27,12 +27,17 @@ class MyApp extends StatelessWidget {
   }
 
   Widget _postDataBuilder() {
-    return FutureBuilder<PostModel?>(
+    return FutureBuilder<HTTPRequestHolderSuccessResponse<PostModel?>?>(
       future: PostRequest(id: 1).send(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           if (snapshot.hasData) {
-            return Text(snapshot.data!.title.toString());
+            final result = snapshot.data;
+            if (result!.payload != null) {
+              return Text('${result.statusCode} ${result.payload!.title}');
+            } else {
+              return Text('${result.statusCode} No payload');
+            }
           } else {
             if (snapshot.hasError) {
               if (snapshot.error is HTTPRequestHolderErrorResponse) {
@@ -102,6 +107,7 @@ class PostRequest extends HTTPRequestHolder<PostModel> {
     return HTTPRequestHolderDummyResponse(
       isDummyResponse: false,
       duration: const Duration(seconds: 2),
+      statusCode: 200,
       json: {
         "userId": 1,
         "id": 1,
