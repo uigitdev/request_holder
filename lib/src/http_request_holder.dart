@@ -68,7 +68,7 @@ abstract class HTTPRequestHolder<T> {
   /// Use it if you want to send your request. [async] method which will return your type [T] if the process was successful.
   /// In case of failure, null or error is returned.
   /// The console indicates the logs.
-  Future<T?> send() async {
+  Future<HTTPRequestHolderSuccessResponse<T?>?> send() async {
     if (_isParserExists()) {
       if (dummyResponse != null && dummyResponse!.isDummyResponse) {
         return await _dummyResponseProcessing();
@@ -99,7 +99,8 @@ abstract class HTTPRequestHolder<T> {
     }
   }
 
-  Future<T?> _dummyResponseProcessing() async {
+  Future<HTTPRequestHolderSuccessResponse<T?>?>
+      _dummyResponseProcessing() async {
     await Future.delayed(dummyResponse!.duration);
 
     if (dummyResponse!.dummyErrorResponse != null &&
@@ -112,18 +113,24 @@ abstract class HTTPRequestHolder<T> {
       if (settings.isDebugPrint) {
         log('⚠️ ${_HTTPRequestResponseType.DUMMY_HTTP_REQUEST_RESPONSE.name}($T):\n${dummyResponse!.json}');
       }
-      return _responseParser(dummyResponse!.json);
+
+      return HTTPRequestHolderSuccessResponse<T?>(
+          statusCode: dummyResponse!.statusCode,
+          payload: _responseParser(dummyResponse!.json));
     }
   }
 
-  Future<T?> _responseProcessing(http.Response response) async {
+  Future<HTTPRequestHolderSuccessResponse<T?>?> _responseProcessing(
+      http.Response response) async {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       if (settings.isDebugPrint) {
         log('✅ ${_HTTPRequestResponseType.REAL_HTTP_REQUEST_RESPONSE.name}($T):\n${response.body}');
       }
 
       final json = await jsonDecode(response.body);
-      return _responseParser(json);
+
+      return HTTPRequestHolderSuccessResponse<T?>(
+          statusCode: response.statusCode, payload: _responseParser(json));
     } else {
       return Future.error(HTTPRequestHolderErrorResponse(
         statusCode: response.statusCode,
@@ -133,6 +140,8 @@ abstract class HTTPRequestHolder<T> {
   }
 
   T? _responseParser(dynamic json) {
+    if (json == null) return null;
+
     switch (parserType) {
       case JSONParserType.LIST:
         return listParser!(json);
@@ -191,12 +200,14 @@ class HTTPRequestHolderSettings {
 class HTTPRequestHolderDummyResponse {
   final bool isDummyResponse;
   final Duration duration;
-  final Object json;
+  final int statusCode;
+  final Object? json;
   final HTTPRequestHolderDummyErrorResponse? dummyErrorResponse;
 
   HTTPRequestHolderDummyResponse({
     required this.isDummyResponse,
     required this.duration,
+    required this.statusCode,
     required this.json,
     this.dummyErrorResponse,
   });
@@ -219,5 +230,15 @@ class HTTPRequestHolderErrorResponse {
   HTTPRequestHolderErrorResponse({
     required this.statusCode,
     required this.body,
+  });
+}
+
+class HTTPRequestHolderSuccessResponse<T> {
+  final int statusCode;
+  final T? payload;
+
+  HTTPRequestHolderSuccessResponse({
+    required this.statusCode,
+    required this.payload,
   });
 }
